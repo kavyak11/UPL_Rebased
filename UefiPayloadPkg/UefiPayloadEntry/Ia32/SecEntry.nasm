@@ -28,19 +28,19 @@ ASM_PFX(_ModuleEntryPoint):
   ;
   ; Save the bootloader parameter base address
   ;
-  mov   eax, [esp + 4]
+  mov     eax, [esp + 4]
 
-  mov   esp, FixedPcdGet32 (PcdPayloadStackTop)
+  mov     esp, FixedPcdGet32 (PcdPayloadStackTop)
 
   ;
   ; Push the bootloader parameter address onto new stack
   ;
-  push  0
-  push  eax
+  push    0
+  push    eax
 
   ;
   ; Call into C code
   ;
-  call  ASM_PFX(PayloadEntry)
-  jmp   $
+  call    ASM_PFX(PayloadEntry)
+  jmp     $
 

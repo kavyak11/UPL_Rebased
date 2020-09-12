@@ -7,16 +7,24 @@
 
 #include "UefiPayloadEntry.h"
 
+
 /**
-   Callback function to build resource descriptor HOB
+   Transfers control to DxeCore.
 
-   This function build a HOB based on the memory map entry info.
+   This function performs a CPU architecture specific operations to execute
+   the entry point of DxeCore with the parameters of HobList.
 
-   @param MemoryMapEntry         Memory map entry info got from bootloader.
-   @param Params                 Not used for now.
+   @param DxeCoreEntryPoint         The entry point of DxeCore.
+   @param HobList                   The start of HobList passed to DxeCore.
 
-  @retval RETURN_SUCCESS        Successfully build a HOB.
 **/
+VOID
+HandOffToDxeCore (
+  IN EFI_PHYSICAL_ADDRESS   DxeCoreEntryPoint,
+  IN EFI_PEI_HOB_POINTERS   HobList
+  );
+
+
 EFI_STATUS
 MemInfoCallback (
   IN MEMROY_MAP_ENTRY          *MemoryMapEntry,
@@ -48,7 +56,7 @@ MemInfoCallback (
   BuildResourceDescriptorHob (Type, Attribue, (EFI_PHYSICAL_ADDRESS)Base, Size);
   DEBUG ((DEBUG_INFO , "buildhob: base = 0x%lx, size = 0x%lx, type = 0x%x\n", Base, Size, Type));
 
-  return RETURN_SUCCESS;
+  return EFI_SUCCESS;
 }
 
 
@@ -343,6 +351,12 @@ BuildGenericHob (
   BuildResourceDescriptorHob (EFI_RESOURCE_MEMORY_MAPPED_IO, ResourceAttribute, 0xFEC80000, SIZE_512KB);
   BuildMemoryAllocationHob ( 0xFEC80000, SIZE_512KB, EfiMemoryMappedIO);
 
+
+//  if (FeaturePcdGet (PcdPrePiProduceMemoryTypeInformationHob)) {
+    // Optional feature that helps prevent EFI memory map fragmentation.
+//    BuildMemoryTypeInformationHob ();
+//  }
+
 }
 
 
@@ -360,34 +374,25 @@ PayloadEntry (
   EFI_STATUS                    Status;
   PHYSICAL_ADDRESS              DxeCoreEntryPoint;
   EFI_HOB_HANDOFF_INFO_TABLE    *HandoffHobTable;
-  UINTN                         MemBase;
-  UINTN                         MemSize;
   UINTN                         HobMemBase;
-  UINTN                         HobMemTop;
+  UINTN                         HobMemSize;
   EFI_PEI_HOB_POINTERS          Hob;
 
-  // Call constructor for all libraries
-  ProcessLibraryConstructorList ();
-
-  DEBUG ((DEBUG_INFO, "GET_BOOTLOADER_PARAMETER() = 0x%lx\n", GET_BOOTLOADER_PARAMETER()));
-  DEBUG ((DEBUG_INFO, "sizeof(UINTN) = 0x%x\n", sizeof(UINTN)));
+  DEBUG ((EFI_D_ERROR, "GET_BOOTLOADER_PARAMETER() = 0x%lx\n", GET_BOOTLOADER_PARAMETER()));
+  DEBUG ((EFI_D_ERROR, "sizeof(UINTN) = 0x%x\n", sizeof(UINTN)));
 
   // Initialize floating point operating environment to be compliant with UEFI spec.
   InitializeFloatingPointUnits ();
 
-  // HOB region is used for HOB and memory allocation for this module
-  MemBase    = PcdGet32 (PcdPayloadFdMemBase);
-  HobMemBase = ALIGN_VALUE (MemBase + PcdGet32 (PcdPayloadFdMemSize), SIZE_1MB);
-  HobMemTop  = HobMemBase + FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
-
-  // DXE core assumes the memory below HOB region could be used, so include the FV region memory into HOB range.
-  MemSize    = HobMemTop - MemBase;
-  HandoffHobTable = HobConstructor ((VOID *)MemBase, MemSize, (VOID *)HobMemBase, (VOID *)HobMemTop);
+  // Init the region for HOB and memory allocation for this module
+  HobMemBase      = ALIGN_VALUE (PcdGet32 (PcdPayloadFdMemBase) + PcdGet32 (PcdPayloadFdMemSize), SIZE_1MB);
+  HobMemSize      = FixedPcdGet32 (PcdSystemMemoryUefiRegionSize);
+  HandoffHobTable = HobConstructor ((VOID *)HobMemBase, HobMemSize, (VOID *)HobMemBase, (VOID *)(HobMemBase + HobMemSize));
 
   // Build HOB based on information from Bootloader
   Status = BuildHobFromBl ();
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "BuildHobFromBl Status = %r\n", Status));
+    DEBUG ((EFI_D_ERROR, "BuildHobFromBl Status = %r\n", Status));
     return Status;
   }
 
@@ -398,7 +403,7 @@ PayloadEntry (
   Status = LoadDxeCore (&DxeCoreEntryPoint);
   ASSERT_EFI_ERROR (Status);
 
-  DEBUG ((DEBUG_INFO, "DxeCoreEntryPoint = 0x%lx\n", DxeCoreEntryPoint));
+  DEBUG ((EFI_D_INFO, "DxeCoreEntryPoint = 0x%lx\n", DxeCoreEntryPoint));
 
   //
   // Mask off all legacy 8259 interrupt sources
@@ -406,10 +411,10 @@ PayloadEntry (
   IoWrite8 (LEGACY_8259_MASK_REGISTER_MASTER, 0xFF);
   IoWrite8 (LEGACY_8259_MASK_REGISTER_SLAVE,  0xFF);
 
-  Hob.HandoffInformationTable = HandoffHobTable;
+  Hob.Raw = GetHobList();
   HandOffToDxeCore (DxeCoreEntryPoint, Hob);
 
   // Should not get here
   CpuDeadLoop ();
-  return EFI_SUCCESS;
+  return EFI_SUCCESS; 
 }

@@ -27,21 +27,21 @@ ASM_PFX(_ModuleEntryPoint):
   cli
 
 
-  mov   rsp, FixedPcdGet32 (PcdPayloadStackTop)
+  mov     rsp, FixedPcdGet32 (PcdPayloadStackTop)
 
   ;
   ; Push the bootloader parameter address onto new stack
   ;
-  push  rcx
-  mov   rax, 0
-  push  rax ; shadow space
-  push  rax
-  push  rax
-  push  rax
+  push    rcx
+  mov     rax, 0
+  push    rax ; shadow space
+  push    rax
+  push    rax
+  push    rax
 
   ;
   ; Call into C code
   ;
-  call  ASM_PFX(PayloadEntry)
-  jmp   $
+  call    ASM_PFX(PayloadEntry)
+  jmp     $
 

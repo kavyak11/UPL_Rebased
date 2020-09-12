@@ -38,21 +38,17 @@ B. HOW TO BUILD
    > edksetup.bat
 
    For pure X64 build:
-   > build -a x64 -p UefiPayloadPkg\UefiPayloadPkg.dsc -b <BuildType> -t <ToolChain>
-     -D BOOTLOADER=<Bootloader>
+   > build -a x64 -p UefiPayloadPkg\UefiPayloadPkg.dsc -b <BuildType> -t <ToolChain> -D BOOTLOADER=<Bootloader>
 
    For X64 build with IA32 entry point:
-   > build -a IA32 -a X64 -p UefiPayloadPkg\UefiPayloadPkg.dsc -b <BuildType> -t <ToolChain>
-     -D BOOTLOADER=<Bootloader>
+   > build -a IA32 -a X64 -p UefiPayloadPkg\UefiPayloadPkg.dsc -b <BuildType> -t <ToolChain> -D BOOTLOADER=<Bootloader>
 
    <BuildType> support 'DEBUG', 'RELEASE' and 'NOOPT'.
-   <ToolChain> is the EDK II build environment on your host. Tested with VS2015x86 toolchain.
+   <ToolChain> is the EDK II build environment on your host. It was tested with VS2015x86 toolchain.
    <Bootloader> could be "SBL" for Slim Bootloader and "COREBOOT" for coreboot.
 
    Refer to https://github.com/tianocore/tianocore.github.io/wiki/UDK2018-How-to-Build for
    details about EDK II build steps.
-
-   NOTE: Pure 32bit UEFI payload support could be added if required later.
 
 2. If build is successfully, the payload image (UEFIPAYLOAD.fd) will be generated inside the
    folder of Build\UefiPayloadPkg.

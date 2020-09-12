@@ -131,7 +131,7 @@ Create4GPageTablesIa32Pae (
         //
         // Need to split this 2M page that covers stack range.
         //
-        Split2MPageTo4K (PhysicalAddress, (UINT64 *) PageDirectoryEntry, StackBase, StackSize, 0, 0);
+        Split2MPageTo4K (PhysicalAddress, (UINT64 *) PageDirectoryEntry, StackBase, StackSize);
       } else {
         //
         // Fill in the Page Directory entries
@@ -285,7 +285,7 @@ HandOffToDxeCore (
     //
     // Create page table and save PageMapLevel4 to CR3
     //
-    PageTables = CreateIdentityMappingPageTables (BaseOfStack, STACK_SIZE, 0, 0);
+    PageTables = CreateIdentityMappingPageTables (BaseOfStack, STACK_SIZE);
 
     //
     // Paging might be already enabled. To avoid conflict configuration,
@@ -301,8 +301,8 @@ HandOffToDxeCore (
 
     SizeOfTemplate = AsmGetVectorTemplatInfo (&TemplateBase);
 
-    VectorAddress = (EFI_PHYSICAL_ADDRESS) (UINTN) AllocatePages (EFI_SIZE_TO_PAGES(sizeof (X64_IDT_TABLE) + SizeOfTemplate * IDT_ENTRY_COUNT));
-    ASSERT (VectorAddress != 0);
+  VectorAddress = (EFI_PHYSICAL_ADDRESS) (UINTN) AllocatePages (EFI_SIZE_TO_PAGES(sizeof (X64_IDT_TABLE) + SizeOfTemplate * IDT_ENTRY_COUNT));
+  ASSERT (VectorAddress != 0);
 
     //
     // Store EFI_PEI_SERVICES** in the 4 bytes immediately preceding IDT to avoid that
@@ -358,7 +358,6 @@ HandOffToDxeCore (
     // 32bit UEFI payload could be supported if required later.
     DEBUG ((DEBUG_ERROR, "NOT support 32bit UEFI payload\n"));
     ASSERT (FALSE);
-    CpuDeadLoop();
   }
 
 }

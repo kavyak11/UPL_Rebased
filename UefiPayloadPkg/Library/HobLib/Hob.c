@@ -14,6 +14,7 @@
 #include <Library/DebugLib.h>
 #include <Library/HobLib.h>
 #include <Library/PcdLib.h>
+//#include <Guid/MemoryAllocationHob.h>
 
 VOID      *mHobList;
 
@@ -35,22 +36,6 @@ GetHobList (
   return mHobList;
 }
 
-
-/**
-  Build a Handoff Information Table HOB
-
-  This function initialize a HOB region from EfiMemoryBegin with length
-  EfiMemoryLength. And EfiFreeMemoryBottom and EfiFreeMemoryTop should
-  be inside the HOB region.
-
-  @param[in] EfiMemoryBegin       Total memory start address
-  @param[in] EfiMemoryLength      Total memory length reported in handoff HOB.
-  @param[in] EfiFreeMemoryBottom  Free memory start address
-  @param[in] EfiFreeMemoryTop     Free memory end address.
-
-  @return   The pointer to the handoff HOB table.
-
-**/
 EFI_HOB_HANDOFF_INFO_TABLE*
 EFIAPI
 HobConstructor (
@@ -87,16 +72,6 @@ HobConstructor (
   return Hob;
 }
 
-/**
-  Add a new HOB to the HOB List.
-
-  @param HobType            Type of the new HOB.
-  @param HobLength          Length of the new HOB to allocate.
-
-  @return  NULL if there is no space to create a hob.
-  @return  The address point to the new created hob.
-
-**/
 VOID *
 EFIAPI
 CreateHob (

@@ -14,7 +14,7 @@
   Allocates one or more pages of type EfiBootServicesData.
 
   Allocates the number of pages of MemoryType and returns a pointer to the
-  allocated buffer.  The buffer returned is aligned on a 4KB boundary.
+  allocated buffer.  The buffer returned is aligned on a 4KB boundary. 
   If Pages is 0, then NULL is returned.
   If there is not enough memory availble to satisfy the request, then NULL
   is returned.
@@ -88,7 +88,7 @@ FreePages (
   Allocates one or more pages of type EfiBootServicesData at a specified alignment.
 
   Allocates the number of pages specified by Pages of type EfiBootServicesData with an
-  alignment specified by Alignment.
+  alignment specified by Alignment. 
   If Pages is 0, then NULL is returned.
   If Alignment is not a power of two and Alignment is not zero, then ASSERT().
   If there is no enough memory at the specified alignment available to satisfy the

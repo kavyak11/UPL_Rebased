@@ -8,13 +8,6 @@
 
 #include "UefiPayloadEntry.h"
 
-/**
-  Allocate pages for code.
-
-  @param[in] Pages      Number of pages to be allocated.
-
-  @return Allocated memory.
-**/
 VOID*
 AllocateCodePages (
   IN  UINTN     Pages
@@ -45,17 +38,6 @@ AllocateCodePages (
 }
 
 
-/**
-    Loads and relocates a PE/COFF image
-
-  @param[in]  PeCoffImage     Point to a Pe/Coff image.
-  @param[out]  ImageAddress   The image memory address after relocation.
-  @param[out]  ImageSize      The image size.
-  @param[out]  EntryPoint     The image entry point.
-
-  @return EFI_SUCCESS    If the image is loaded and relocated successfully.
-  @return Others         If the image failed to load or relocate.
-**/
 EFI_STATUS
 LoadPeCoffImage (
   IN  VOID                          *PeCoffImage,
@@ -74,43 +56,34 @@ LoadPeCoffImage (
   ImageContext.ImageRead = PeCoffLoaderImageReadFromMemory;
 
   Status = PeCoffLoaderGetImageInfo (&ImageContext);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
+  ASSERT_EFI_ERROR (Status);
 
   //
   // Allocate Memory for the image
   //
   Buffer = AllocateCodePages (EFI_SIZE_TO_PAGES((UINT32)ImageContext.ImageSize));
-  if (Buffer == NULL) {
-    return EFI_OUT_OF_RESOURCES;
-  }
+  ASSERT (Buffer != 0);
+
   ImageContext.ImageAddress = (EFI_PHYSICAL_ADDRESS)(UINTN)Buffer;
 
   //
   // Load the image to our new buffer
   //
   Status = PeCoffLoaderLoadImage (&ImageContext);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
+  ASSERT_EFI_ERROR (Status);
 
   //
   // Relocate the image in our new buffer
   //
   Status = PeCoffLoaderRelocateImage (&ImageContext);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
+  ASSERT_EFI_ERROR (Status);
+
 
   *ImageAddress = ImageContext.ImageAddress;
   *ImageSize    = ImageContext.ImageSize;
   *EntryPoint   = ImageContext.EntryPoint;
 
-  return EFI_SUCCESS;
+  return Status;
 }
 
 /**
@@ -246,7 +219,7 @@ FileFindSection (
   @param[out]  DxeCoreEntryPoint     DXE core entry point
 
   @retval EFI_SUCCESS        If it completed successfully.
-  @retval EFI_NOT_FOUND      If it failed to load DXE FV.
+  @retval EFI_NOT_FOUND      If it failed to process DXE FV.
 **/
 EFI_STATUS
 LoadDxeCore (
