@@ -1107,7 +1107,7 @@ SerialPortSetAttributes (
 
   @retval RETURN_SUCCESS  Success.
 **/
-EFI_STATUS
+/*EFI_STATUS
 EFIAPI
 BaseSerialPortLib16550 (
   VOID
@@ -1117,4 +1117,4 @@ BaseSerialPortLib16550 (
   // enable the chain of constructor invocation for
   // dependent libraries.
   return RETURN_SUCCESS;
-}
+}*/

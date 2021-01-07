@@ -16,7 +16,7 @@
   MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.1
   LIBRARY_CLASS                  = SerialPortLib
-  CONSTRUCTOR                    = BaseSerialPortLib16550
+  #CONSTRUCTOR                    = BaseSerialPortLib16550
 
 [Packages]
   MdePkg/MdePkg.dec

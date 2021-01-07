@@ -202,6 +202,8 @@
   AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
 !endif
   VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
+  VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLib.inf
+  VariablePolicyHelperLib|MdeModulePkg/Library/VariablePolicyHelperLib/VariablePolicyHelperLib.inf
 
 
   #
@@ -341,6 +343,7 @@
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/RuntimeCryptLib.inf
   PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
   QemuFwCfgS3Lib|OvmfPkg/Library/QemuFwCfgS3Lib/DxeQemuFwCfgS3LibFwCfg.inf
+  VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLibRuntimeDxe.inf
 
 [LibraryClasses.common.UEFI_DRIVER]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
